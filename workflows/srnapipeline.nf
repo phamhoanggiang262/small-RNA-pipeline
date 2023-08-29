@@ -35,6 +35,12 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 */
 
 //
+// MODULE: Loaded from modules/local/
+//
+
+include { SRNAMAPPER                     } from '../modules/local/srnamapper'
+include { MMQUANT                        } from '../modules/local/mmquant'
+//
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
@@ -49,6 +55,10 @@ include { INPUT_CHECK } from '../subworkflows/local/input_check'
 // MODULE: Installed directly from nf-core/modules
 //
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
+include { FASTP 		              } from '../modules/nf-core/fastp/main'
+include { BWA_INDEX		              } from '../modules/nf-core/bwa/index/main'
+include { SAMTOOLS_VIEW               } from '../modules/nf-core/samtools/view/main' 
+include { SAMTOOLS_SORT               } from '../modules/nf-core/samtools/sort/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 
@@ -84,6 +94,93 @@ workflow SRNAPIPELINE {
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
+
+    //
+    // MODULE: Run fastp
+    //
+
+    FASTP (
+    	INPUT_CHECK.out.reads, [], [], []
+    )
+
+    ch_versions = ch_versions.mix(FASTP.out.versions.first())
+
+    //
+    // MODULE: Run BWA_INDEX
+    //	
+
+    if (params.fasta) {
+                    Channel.from([
+	                [["id" : "bwa_index"], file(params.fasta)]])
+	                .set {fasta_ch}
+						
+    BWA_INDEX (
+        fasta_ch
+    )
+
+    BWA_INDEX.out.index
+	     .map { meta, index -> [index] }
+	     .set { bwa_index_ch 	           }
+    } 
+    
+    ch_versions = ch_versions.mix(BWA_INDEX.out.versions.first())
+
+    //
+    // MODULE: Run srnaMapper
+    //	
+    
+    map_ch = FASTP.out.reads
+                  .combine(bwa_index_ch)
+	
+
+	SRNAMAPPER (
+        map_ch
+    )
+    
+
+   // SRNAMAPPER.out.sam.view()
+    //
+    // MODULE: Run srnaMapper
+    //	
+   
+    map_output = SRNAMAPPER.out.sam.map{it -> it + [ [] ] }
+    map_output.view()
+    
+
+
+    //
+    // MODULE: Run samtools_view
+    //	
+    SAMTOOLS_VIEW (
+        map_output, [[],[]], []
+    )
+
+    //SAMTOOLS_VIEW.out.bam.view()
+
+
+    //
+    // MODULE: Run samtools_sort
+    //	
+    SAMTOOLS_SORT (
+        SAMTOOLS_VIEW.out.bam
+    )
+
+    SAMTOOLS_SORT.out.bam.view()
+
+	annotation_ch = channel.fromPath(params.annotation)
+	SAMTOOLS_SORT.out.bam   | map { meta, bam -> [ [ "id":"test" ], bam ] }
+			   				| groupTuple ()
+			  				| combine(annotation_ch)
+		           			| set { bam_ch } 
+
+
+    bam_ch.view()
+    //
+    // MODULE: Run mmquant
+    //	    
+
+    MMQUANT (bam_ch)
+
 
     //
     // MODULE: MultiQC
