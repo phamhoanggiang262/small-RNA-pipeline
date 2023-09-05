@@ -14,6 +14,8 @@ WorkflowSrnapipeline.initialise(params, log)
 def checkPathParamList = [ params.input, params.multiqc_config, params.fasta ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
+params.schema_ignore_params = "configfile,annotation"
+
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
@@ -40,6 +42,10 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 
 include { SRNAMAPPER                     } from '../modules/local/srnamapper'
 include { MMQUANT                        } from '../modules/local/mmquant'
+include { MMANNOT                        } from '../modules/local/mmannot'
+include { CREATESAMPLEINFO 		         } from '../modules/local/createsampleinfo'
+include { SRNADIFF	 		             } from '../modules/local/srnadiff'
+
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
@@ -144,7 +150,7 @@ workflow SRNAPIPELINE {
     //	
    
     map_output = SRNAMAPPER.out.sam.map{it -> it + [ [] ] }
-    map_output.view()
+    //map_output.view()
     
 
 
@@ -174,12 +180,28 @@ workflow SRNAPIPELINE {
 		           			| set { bam_ch } 
 
 
-    bam_ch.view()
+    //bam_ch.view()
     //
-    // MODULE: Run mmquant
+    // MODULE: Run mmquant, srnadiff, mmannot
     //	    
 
-    MMQUANT (bam_ch)
+
+	if (params.annotation != "NO_FILE")
+	{
+		if(params.configfile){
+
+			configfile_ch = channel.fromPath(params.configfile)
+			MMANNOT(bam_ch, configfile_ch)
+			//SRNADIFF (CREATESAMPLEINFO.out.sampleInfo, SAMTOOLS_SORT.out.bam, annotation_ch )
+			MMQUANT (bam_ch)
+		}
+
+		else{
+			//SRNADIFF (CREATESAMPLEINFO.out.sampleInfo, SAMTOOLS_SORT.out.bam, annotation_ch )
+			MMQUANT (bam_ch)
+		}
+
+	}
 
 
     //
