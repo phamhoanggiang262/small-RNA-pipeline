@@ -181,6 +181,15 @@ workflow SRNAPIPELINE {
 
 
     //bam_ch.view()
+
+
+    //
+    // MODULE: Run samtools_sort
+    //	   
+
+    samplesheet_ch = Channel.fromPath(params.input)
+    CREATESAMPLEINFO(samplesheet_ch)
+
     //
     // MODULE: Run mmquant, srnadiff, mmannot
     //	    
@@ -192,12 +201,12 @@ workflow SRNAPIPELINE {
 
 			configfile_ch = channel.fromPath(params.configfile)
 			MMANNOT(bam_ch, configfile_ch)
-			//SRNADIFF (CREATESAMPLEINFO.out.sampleInfo, SAMTOOLS_SORT.out.bam, annotation_ch )
+			SRNADIFF (CREATESAMPLEINFO.out.sampleInfo, SAMTOOLS_SORT.out.bam, annotation_ch )
 			MMQUANT (bam_ch)
 		}
 
 		else{
-			//SRNADIFF (CREATESAMPLEINFO.out.sampleInfo, SAMTOOLS_SORT.out.bam, annotation_ch )
+			SRNADIFF (CREATESAMPLEINFO.out.sampleInfo, SAMTOOLS_SORT.out.bam, annotation_ch )
 			MMQUANT (bam_ch)
 		}
 

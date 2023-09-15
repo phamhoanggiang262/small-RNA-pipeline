@@ -80,6 +80,26 @@
                 }
             }
         },
+        "annotation_configfile_options": {
+            "title": "Annotation and configfile",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "Annotation file and config related files and options required to run mmannot of the workflow.",
+            "properties": {
+                "annotation": {
+                    "type": "string",
+                    "description": "Name of annotation",
+                    "fa_icon": "fas fa-book",
+                    "help_text": "Using annotation to run mmquant and mmannot."
+                },
+                "configfile": {
+                    "type": "string",
+                    "description": "Name of configfile",
+                    "fa_icon": "fas fa-book",
+                    "help_text": "Using configfile to run mmannot."
+                }              
+            }
+        },        
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",

@@ -21,7 +21,6 @@ opt_parser <- OptionParser(option_list = option_list);
 opt <- parse_args(opt_parser);
 
 # read sample sheet file
-
 samplesheet <- read.csv(opt$samplesheet)
 
 #rename column name
@@ -38,4 +37,5 @@ samplesheet$FileName <- file.path(opt$path, paste0(samplesheet$SampleName, ".bam
 samplesheet %>%  relocate(FileName, .before = SampleName) -> samplesheet
 
 write.table(samplesheet, file="sampleInfo.csv", sep=",", row.names = F, col.names = T)
+
 
