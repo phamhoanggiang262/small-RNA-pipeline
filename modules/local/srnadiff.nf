@@ -16,10 +16,10 @@ process SRNADIFF {
     path 'DE_regions.bed'	
 
     script:	
-    def annotationFile = annotation.name != 'NO_FILE' ? "--annotationFile $annotation" : ''
+    def annotationFile = annotation.name != 'NO_FILE' ? " $annotation" : ''
 	
     """
-    Rscript srnadiff2.R $sampleInfo $annotationFile 
+    /root/nf-core-srnapipeline/bin/srnadiff.R $sampleInfo $annotationFile 
     """
     
 }
