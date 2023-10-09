@@ -19,7 +19,7 @@ process SRNADIFF {
     def annotationFile = annotation.name != 'NO_FILE' ? "--annotationFile $annotation" : ''
 	
     """
-    srnadiff.R --sampleSheet $sampleInfo $annotationFile 
+    Rscript srnadiff2.R $sampleInfo $annotationFile 
     """
     
 }

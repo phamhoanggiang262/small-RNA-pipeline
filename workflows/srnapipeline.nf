@@ -65,6 +65,7 @@ include { FASTP 		              } from '../modules/nf-core/fastp/main'
 include { BWA_INDEX		              } from '../modules/nf-core/bwa/index/main'
 include { SAMTOOLS_VIEW               } from '../modules/nf-core/samtools/view/main' 
 include { SAMTOOLS_SORT               } from '../modules/nf-core/samtools/sort/main'
+include { DESEQ2_DIFFERENTIAL                               } from '../modules/nf-core/deseq2/differential/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 
@@ -183,16 +184,22 @@ workflow SRNAPIPELINE {
     //bam_ch.view()
 
 
-    //
-    // MODULE: Run samtools_sort
+    // SRNADIFF PREPARATION
+    // MODULE: Run createsampleinfo
     //	   
 
     samplesheet_ch = Channel.fromPath(params.input)
     CREATESAMPLEINFO(samplesheet_ch)
 
+
+
     //
     // MODULE: Run mmquant, srnadiff, mmannot
     //	    
+
+
+
+
 
 
 	if (params.annotation != "NO_FILE")
@@ -213,6 +220,48 @@ workflow SRNAPIPELINE {
 	}
 
 
+
+    // DESEQ2 PREPARATION
+    // MODULE: Run expression contrast
+    //	   
+/*
+    ch_empty_spikes = [[],[]]
+
+    expression_contrasts = file(params.contrasts)
+    expression_sample_sheet = file(params.input)
+     
+    MMQUANT.out.count_matrix.map{meta, count_matrix -> count_matrix}.set{expression_matrix}
+    expression_matrix.view()
+    
+
+    Channel.fromPath(expression_contrasts)
+        .splitCsv ( header:true, sep:',' )
+        .map{
+            tuple(it, it.variable, it.reference, it.target)
+        }
+        .set{
+            ch_contrasts
+        }
+
+    ch_matrix = channel.from( [
+        [[id: 'differential_expression'], expression_sample_sheet]])
+        .combine(expression_matrix)
+
+    ch_matrix.view() 
+
+       
+    
+    //
+    // MODULE: MultiQC
+    //
+
+        DESEQ2_DIFFERENTIAL (
+        ch_contrasts,
+        ch_matrix,
+        ch_empty_spikes
+    )
+
+*/
     //
     // MODULE: MultiQC
     //
