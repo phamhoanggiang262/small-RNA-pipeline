@@ -224,7 +224,7 @@ workflow SRNAPIPELINE {
     // DESEQ2 PREPARATION
     // MODULE: Run expression contrast
     //	   
-
+/*
     ch_empty_spikes = [[],[]]
 
     expression_contrasts = file(params.contrasts)
@@ -260,7 +260,7 @@ workflow SRNAPIPELINE {
         ch_matrix,
         ch_empty_spikes
     )
-
+*/
 
     //
     // MODULE: MultiQC

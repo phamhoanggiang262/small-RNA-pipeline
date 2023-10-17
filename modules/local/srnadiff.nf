@@ -1,6 +1,6 @@
 process SRNADIFF {
     tag "$meta.id"
-    label 'process_long'
+    label 'process_high'
 
     conda "bioconda::bioconductor-srnadiff=1.18.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -19,7 +19,7 @@ process SRNADIFF {
     def annotationFile = annotation.name != 'NO_FILE' ? " $annotation" : ''
 	
     """
-    /root/nf-core-srnapipeline/bin/srnadiff.R $sampleInfo $annotationFile 
+    srnadiff2.R $sampleInfo $annotationFile 
     """
     
 }

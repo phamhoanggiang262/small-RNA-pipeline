@@ -4,7 +4,7 @@
 args = commandArgs(trailingOnly=TRUE)
 
 library(srnadiff)
-
+library(GenomicRanges)
 
 
 

@@ -13,7 +13,8 @@ library(srnadiff)
 
 
 # Sample sheet
-sample_sheet <- read.delim(file = args[1], header = T, sep = ",")
+sample_sheet <- read.delim(file = "/root/nf-core-srnapipeline/results/createsampleinfo/sampleInfo.csv", header = T, sep = ",")
+#sample_sheet <- read.delim(file = args[1], header = T, sep = ",")
 FileName = sample_sheet[,1]
 
 
