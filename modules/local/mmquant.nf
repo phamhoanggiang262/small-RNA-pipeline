@@ -31,6 +31,8 @@ process MMQUANT {
       -O count_report.tsv \\
        $args
 	
+    sed -i 's/^Gene\t/gene_id\t/' count_data.tsv
+
 	
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -99,6 +99,20 @@
                     "help_text": "Using configfile to run mmannot."
                 }              
             }
+        }, 
+        "contrasts_options": {
+            "title": "contrasts file",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "Contrasts file for deseq2 differential expression",
+            "properties": {
+                "contrasts": {
+                    "type": "string",
+                    "description": "Name of contrasts",
+                    "fa_icon": "fas fa-book",
+                    "help_text": "Using contrasts to run deseq2."
+                }  
+            }
         },        
         "institutional_config_options": {
             "title": "Institutional config options",
