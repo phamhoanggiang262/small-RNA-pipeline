@@ -40,6 +40,7 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 // MODULE: Loaded from modules/local/
 //
 
+include { SRNAMAPPERSAMTOOLSVIEW         } from '../modules/local/srnamappersamtoolsview'
 include { SRNAMAPPER                     } from '../modules/local/srnamapper'
 include { MMQUANT                        } from '../modules/local/mmquant'
 include { MMANNOT                        } from '../modules/local/mmannot'
@@ -138,19 +139,22 @@ workflow SRNAPIPELINE {
     
     map_ch = FASTP.out.reads
                   .combine(bwa_index_ch)
-	
 
+    SRNAMAPPERSAMTOOLSVIEW (map_ch)
+	
+/*
 	SRNAMAPPER (
         map_ch
     )
     
+*/
 
    // SRNAMAPPER.out.sam.view()
     //
     // MODULE: Run srnaMapper
     //	
    
-    map_output = SRNAMAPPER.out.sam.map{it -> it + [ [] ] }
+   // map_output = SRNAMAPPER.out.sam.map{it -> it + [ [] ] }
     //map_output.view()
     
 
@@ -158,10 +162,11 @@ workflow SRNAPIPELINE {
     //
     // MODULE: Run samtools_view
     //	
+/*
     SAMTOOLS_VIEW (
         map_output, [[],[]], []
     )
-
+*/
     //SAMTOOLS_VIEW.out.bam.view()
 
 
@@ -169,7 +174,7 @@ workflow SRNAPIPELINE {
     // MODULE: Run samtools_sort
     //	
     SAMTOOLS_SORT (
-        SAMTOOLS_VIEW.out.bam
+        SRNAMAPPERSAMTOOLSVIEW.out.bam
     )
 
     SAMTOOLS_SORT.out.bam.view()
@@ -181,6 +186,8 @@ workflow SRNAPIPELINE {
 		           			| set { bam_ch } 
 
 
+    SAMTOOLS_SORT.out.bam.view()
+    
     //bam_ch.view()
 
 
