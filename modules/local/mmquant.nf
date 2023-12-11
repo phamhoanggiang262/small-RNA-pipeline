@@ -5,8 +5,8 @@ process MMQUANT {
 
     conda "bioconda::mmquant=1.0.9"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/mmquant:1.0.5--hd03093a_0':
-        'biocontainers/mmquant:1.0.5--hd03093a_0' }"
+        'https://depot.galaxyproject.org/singularity/mmquant:1.0.9--hdcf5f25_0':
+        'biocontainers/mmquant:1.0.9--hdcf5f25_0' }"
 
     input:
     tuple val(meta), path (bam), path (annotation)
