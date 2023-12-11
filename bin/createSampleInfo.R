@@ -34,7 +34,7 @@ colnames(samplesheet)[2] = "FileName"
 samplesheet$FileName<- sub('.*/', '', samplesheet$FileName)
 
 #set to absolute path
-samplesheet$FileName <- file.path(opt$path, paste0(samplesheet$sample, ".sorted.bam"))
+samplesheet$FileName <- file.path(opt$path, paste0(samplesheet$sample, ".bam"))
 
 
 #move FileName in the front
