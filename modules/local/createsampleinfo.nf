@@ -11,7 +11,7 @@ input:
 	
 	script:
 	"""
-	createSampleInfo.R --samplesheet $samplesheet --path $baseDir/results/samtools/sort
+	createSampleInfo.R --samplesheet $samplesheet --path ${params.outdir}/samtools/sort
 	"""	
 }
 
